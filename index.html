@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Leaflet.SimpleLocate - Demo (v1.0.4)</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+      <script src="https://cdn.jsdelivr.net/npm/leaflet-ant-path@1.1.2/dist/leaflet-ant-path.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://code.jquery.com/ui/1.8.24/jquery-ui.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.1.min.js"></script>
+
+    <!-- <script src="src/leaflet-simple-locate.js"></script> -->
+    <script src="leaflet-simple-locate.min.js"></script>
+    <link rel="stylesheet" href="demo.css" /> 
+    <link rel="stylesheet" href="style.css">
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"
+    />-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/tomickigrzegorz/autocomplete@1.8.6/dist/js/autocomplete.min.js"></script>
+
+    <link
+      href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
+
+    <link rel="stylesheet" href="control.layers.minimap.css" />
+    <script src="L.Control.Layers.Minimap.js"></script>
+
+
+<!-- <script src="leaflet.customsearchbox.min.js"></script>-->
+<!-- <link href="searchbox.min.css" rel="stylesheet" />-->
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/tomickigrzegorz/autocomplete@1.8.6/dist/css/autocomplete.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/gh/tomickigrzegorz/autocomplete@1.8.6/dist/js/autocomplete.min.js"></script>
+  </head>
+
+
+
+    <style>
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            --primary-rgb: 25, 135, 84;
+        }
+    </style>
+
+</head>
+<!-- 
+  <body>
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+      <symbol id="icon-arrow-left" viewBox="0 0 24 24">
+        <path d="M15.422 16.594 14.016 18l-6-6 6-6 1.406 1.406L10.828 12z" />
+      </symbol>
+      <symbol id="icon-clear" viewBox="0 0 24 24">
+        <path
+          d="M18.984 6.422 13.406 12l5.578 5.578-1.406 1.406L12 13.406l-5.578 5.578-1.406-1.406L10.594 12 5.016 6.422l1.406-1.406L12 10.594l5.578-5.578z"
+        />
+      </symbol>
+      <symbol id="icon-email" viewBox="0 0 24 24">
+        <path
+          d="M20.016 8.016V6L12 11.016 3.984 6v2.016L12 12.985zm0-4.032q.797 0 1.383.609t.586 1.406v12q0 .797-.586 1.406t-1.383.609H3.985q-.797 0-1.383-.609t-.586-1.406v-12q0-.797.586-1.406t1.383-.609h16.031z"
+        />
+      </symbol>
+      <symbol id="icon-menu" viewBox="0 0 24 24">
+        <path
+          d="M3 13h18a1 1 0 0 0 0-2H3a1 1 0 0 0 0 2zm0-6h18a1 1 0 0 0 0-2H3a1 1 0 0 0 0 2zm0 12h18a1 1 0 0 0 0-2H3a1 1 0 0 0 0 2z"
+        />
+      </symbol>
+      <symbol id="icon-person" viewBox="0 0 24 24">
+        <path
+          d="M12 14.016q2.531 0 5.273 1.102t2.742 2.883v2.016H3.984v-2.016q0-1.781 2.742-2.883t5.273-1.102zM12 12q-1.641 0-2.813-1.172T8.015 8.015t1.172-2.836T12 3.984t2.813 1.195 1.172 2.836-1.172 2.813T12 12z"
+        />
+      </symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24">
+        <path
+          d="M12 15.516q1.453 0 2.484-1.031t1.031-2.484-1.031-2.484T12 8.486 9.516 9.517t-1.031 2.484 1.031 2.484T12 15.516zm7.453-2.532 2.109 1.641q.328.234.094.656L19.64 18.75q-.188.328-.609.188l-2.484-.984q-.984.703-1.688.984l-.375 2.625q-.094.422-.469.422H9.984q-.375 0-.469-.422l-.375-2.625q-.891-.375-1.688-.984l-2.484.984q-.422.141-.609-.188l-2.016-3.469q-.234-.422.094-.656l2.109-1.641q-.047-.328-.047-.984t.047-.984L2.437 9.375q-.328-.234-.094-.656L4.359 5.25q.188-.328.609-.188l2.484.984q.984-.703 1.688-.984l.375-2.625q.094-.422.469-.422h4.031q.375 0 .469.422l.375 2.625q.891.375 1.688.984l2.484-.984q.422-.141.609.188l2.016 3.469q.234.422-.094.656l-2.109 1.641q.047.328.047.984t-.047.984z"
+        />
+      </symbol>
+    </svg>
+    <div class="sidebar">
+      <button aria-label="close sidebar" type="button" class="close-button">
+        <svg>
+          <use xlink:href="#icon-clear" />
+        </svg>
+      </button>
+
+      <ul class="sidebar-menu">
+        <li class="menu-item" data-item="menu">
+          <svg><use xlink:href="#icon-menu"></use></svg>
+        </li>
+        <li class="menu-item" data-item="person">
+          <svg><use xlink:href="#icon-person"></use></svg>
+        </li>
+        <li class="menu-item" data-item="email">
+          <svg><use xlink:href="#icon-email"></use></svg>
+        </li>
+        <li class="menu-item" data-item="settings">
+          <svg><use xlink:href="#icon-settings"></use></svg>
+        </li>
+      </ul>
+
+      <div class="sidebar-content">
+        <div class="item-content" id="menu">
+          <h2>Sidebar without plugins</h2>
+          <div class="content">
+            Such a menu is not difficult to create on your own, you only need a
+            little html, css and only 40 lines of js. Not only will we learn
+            something new, but we will adjust the solution 100% to our
+            assumptions.<br /><br />You really don't need any plugin to do
+            something like this.
+          </div>
+        </div>
+        <div class="item-content" id="person">
+          <h2>Person</h2>
+          <div class="content">
+            person - Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+            Omnis, a.
+          </div>
+        </div>
+        <div class="item-content" id="email">
+          <h2>Email</h2>
+          <div class="content">
+            email - Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+            Nobis nostrum incidunt, ab explicabo expedita aliquam officiis vitae
+            laborum dicta consectetur, animi cum, culpa quaerat nam? Porro
+            temporibus, itaque quibusdam vitae consequuntur est ab iure! Commodi
+            est aspernatur animi quae! Ad fuga perferendis dignissimos
+            consectetur. Ullam excepturi eligendi blanditiis ex eius eaque
+            dignissimos officiis mollitia minus assumenda, necessitatibus,
+            reprehenderit molestias qui doloribus quaerat consequuntur
+            voluptatibus! Quos impedit a non eligendi, dolor animi sapiente
+            deserunt. Sunt ad saepe, dolorem voluptas impedit quibusdam, error
+            iure recusandae laboriosam id neque nam minus ducimus nemo nobis cum
+            in expedita unde accusantium rem. Ad dignissimos, quaerat
+            necessitatibus mollitia facere recusandae ipsum sint vel
+            exercitationem nemo quibusdam inventore? Laborum assumenda tenetur
+            cum quaerat tempore vero, ab optio magni quidem mollitia, ut, harum
+            amet nobis natus. Suscipit eos alias temporibus, eligendi quia
+            deserunt dignissimos dolor magnam et ratione praesentium, aspernatur
+            officiis reiciendis aut consectetur impedit velit id totam unde in.
+            Harum asperiores id veniam nam reprehenderit beatae, eaque qui odio
+            velit, blanditiis voluptas ipsum nihil! Fugit excepturi quod quaerat
+            magni quae delectus cum tempore culpa, saepe voluptatibus vitae
+            voluptatum dolorem quo magnam? Ex adipisci harum nihil laudantium
+            dolore minima quo amet deleniti eius vero, sunt sapiente dicta
+            aperiam, ratione aliquid officia iste dolorum similique consectetur
+            quaerat magni dolores iure odit? Id labore eveniet eligendi
+            voluptatibus. Repellat, assumenda!!!
+          </div>
+        </div>
+        <div class="item-content" id="settings">
+          <h2>Settings</h2>
+          <div class="content">settings</div>
+        </div>
+      </div>
+    </div>
+  </body>
+-->
+
+<body>
+    <div id="map"></div>
+      <body>
+    <div class="cities">
+      <div class="city">
+        <label for="cityA">Distance from</label>
+        <div class="auto-search-wrapper">
+          <input
+            type="text"
+            autocomplete="off"
+            id="cityA"
+            placeholder="City distance from"
+          />
+        </div>
+      </div>
+      <div class="city">
+        <label for="cityB">Distance to</label>
+        <div class="auto-search-wrapper">
+          <input
+            type="text"
+            autocomplete="off"
+            id="cityB"
+            placeholder="City distance to"
+          />
+        </div>
+      </div>
+      <button class="clear-distance">CLEAR</button>
+    </div>
+    <!-- <div class="length">Select cities</div>-->
+  </body>
+  
+
+
+    <script>
+        "use strict";
+
+        function set_viewport() {
+            document.documentElement.style.setProperty("--vh", window.innerHeight * 0.01 + "px");
+        }
+
+        set_viewport();
+        window.addEventListener("resize", set_viewport);
+
+
+const attribution =
+ '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+const osmURL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+
+
+
+// Used to load and display tile layers on the map
+// Most tile servers require attribution, which you can set under `Layer`
+//const cartoDB = '<a href="http://cartodb.com/attributions">CartoDB</a>';
+const landUrl = "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png";
+//const landMap = new L.tileLayer(landUrl, { attribution: cartoAttrib });
+
+const Stamentoner ="http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png";
+const Stamenwatercolor = "http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.jpg";
+
+
+
+
+var map = L.map('map').setView([40.7128, -74.0060], 13);
+map.zoomControl.setPosition('topright');
+
+
+
+//Plugin magic goes here! Note that you cannot use the same layer object again, as that will confuse the two map controls
+const osm2 = new L.TileLayer(osmURL, { minZoom: 0, maxZoom: 13, attribution });
+const miniMap = new L.Control.MiniMap(osm2, { toggleDisplay: true }).addTo(map);
+
+
+ /*            $(document).ready(function () {
+
+
+        var searchboxControl=createSearchboxControl();
+        var control = new searchboxControl({
+            sidebarTitleText: 'Header',
+            sidebarMenuItems: {
+                Items: [
+                    { type: "link", name: "Link 1 (github.com)", href: "http://github.com", icon: "icon-local-carwash" },
+                    { type: "link", name: "Link 2 (google.com)", href: "http://google.com", icon: "icon-cloudy" },
+                    { type: "button", name: "Button 1", onclick: "alert('button 1 clicked !')", icon: "icon-potrait" },
+                    { type: "button", name: "Button 2", onclick: "button2_click();", icon: "icon-local-dining" },
+                    { type: "link", name: "Link 3 (stackoverflow.com)", href: 'http://stackoverflow.com', icon: "icon-bike" },
+
+                ]
+            }
+        });
+
+        control._searchfunctionCallBack = function (searchkeywords)
+        {
+            if (!searchkeywords) {
+                searchkeywords = "The search call back is clicked !!"
+            }
+            alert(searchkeywords);
+        }
+
+        map.addControl(control);
+    });
+    */
+
+
+const length = document.querySelector(".length");
+const cityA = document.querySelector("#cityA");
+const cityB = document.querySelector("#cityB");
+const clearButton = document.querySelector(".clear-distance");
+
+let markers = [];
+let featureGroups = [];
+
+function results({ currentValue, matches, template }) {
+  const regex = new RegExp(currentValue, "i");
+  // checking if we have results if we don't
+  // take data from the noResults method
+  return matches === 0
+    ? template
+    : matches
+        .map((element) => {
+          return `
+          <li class="autocomplete-item" role="option" aria-selected="false">
+            <p>${element.properties.display_name.replace(
+              regex,
+              (str) => `<b>${str}</b>`
+            )}</p>
+          </li> `;
+        })
+        .join("");
+}
+
+function nominatim(currentValue) {
+  const api = `https://nominatim.openstreetmap.org/search?format=geojson&limit=5&q=${encodeURI(
+    currentValue
+  )}`;
+
+  return new Promise((resolve) => {
+    fetch(api)
+      .then((response) => response.json())
+      .then((data) => {
+        resolve(data.features);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
+}
+
+function addMarkerToMap(object) {
+  const { display_name } = object.properties;
+  const arr = object.geometry.coordinates.reverse();
+
+  const customId = Math.random();
+
+  const marker = L.marker(arr, {
+    title: display_name,
+    id: customId,
+  });
+
+  // add marker to map
+  marker.addTo(map).bindPopup(display_name);
+
+  map.setView(arr, 8);
+
+  // add marker to array markers
+  markers.push(arr);
+
+  // add marker to array featureGroup
+  featureGroups.push(marker);
+
+  if (markers.length == 2) {
+    // add polyline between cities
+    L.polyline(markers, {
+      color: "red",
+    }).addTo(map);
+
+    // matching all markers to the map view
+    let group = new L.featureGroup(featureGroups);
+    map.fitBounds(group.getBounds(), {
+      padding: [10, 10], // adding padding to map
+    });
+
+    // add text 'Length (in kilometers):'
+    distanceBetweenMarkers();
+  }
+
+  if (markers.length > 2) {
+    clearData();
+  }
+}
+
+function clearData() {
+  // clear array
+  markers = [];
+
+  // back to default coordinate
+  map.panTo([lat, lng]);
+
+  // set info ;)
+  length.textContent = "Markers and plines have been removed";
+
+  // remove polyline
+  for (i in map._layers) {
+    if (map._layers[i]._path != undefined) {
+      try {
+        map.removeLayer(map._layers[i]);
+      } catch (e) {
+        console.log("problem with " + e + map._layers[i]);
+      }
+    }
+  }
+
+  // remove markers
+  map.eachLayer((layer) => {
+    if (layer.options && layer.options.pane === "markerPane") {
+      map.removeLayer(layer);
+    }
+  });
+}
+
+function distanceBetweenMarkers() {
+  const from = L.marker(markers[0]).getLatLng();
+  const to = L.marker(markers[1]).getLatLng();
+
+  // in km
+  const distance = from.distanceTo(to) / 1000;
+
+  length.textContent = `Length (in kilometers): ${distance.toFixed(5)}`;
+}
+
+window.addEventListener("DOMContentLoaded", function () {
+  ["cityA", "cityB"].forEach((city) => {
+    const auto = new Autocomplete(city, {
+      clearButton: false,
+      howManyCharacters: 2,
+
+      onSearch: ({ currentValue }) => nominatim(currentValue),
+
+      onResults: (object) => results(object),
+
+      onSubmit: ({ object }) => addMarkerToMap(object),
+
+      // the method presents no results
+      noResults: ({ currentValue, template }) =>
+        template(`<li>No results found: "${currentValue}"</li>`),
+    });
+
+    clearButton.addEventListener("click", () => {
+      clearData();
+
+      // destroy method
+      auto.destroy();
+
+      // focus on first input
+      document.querySelector("#cityA").focus();
+    });
+  });
+});
+
+// --------------------------------------------------------------
+// create seearch button
+
+// add "random" button
+const buttonTemplate = `<div class="leaflet-search"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path d="M31.008 27.231l-7.58-6.447c-0.784-0.705-1.622-1.029-2.299-0.998 1.789-2.096 2.87-4.815 2.87-7.787 0-6.627-5.373-12-12-12s-12 5.373-12 12 5.373 12 12 12c2.972 0 5.691-1.081 7.787-2.87-0.031 0.677 0.293 1.515 0.998 2.299l6.447 7.58c1.104 1.226 2.907 1.33 4.007 0.23s0.997-2.903-0.23-4.007zM12 20c-4.418 0-8-3.582-8-8s3.582-8 8-8 8 3.582 8 8-3.582 8-8 8z"></path></svg></div><div class="auto-search-wrapper max-height"><input type="text" id="marker" autocomplete="off"  aria-describedby="instruction" aria-label="Search ..." /><div id="instruction" class="hidden">When autocomplete results are available use up and down arrows to review and enter to select. Touch device users, explore by touch or with swipe gestures.</div></div>`;
+
+// create custom button
+const customControl = L.Control.extend({
+  // button position
+  options: {
+    position: "topleft",
+    className: "leaflet-autocomplete",
+  },
+
+  // method
+  onAdd: function () {
+    return this._initialLayout();
+  },
+
+  _initialLayout: function () {
+    // create button
+    const container = L.DomUtil.create(
+      "div",
+      "leaflet-bar " + this.options.className
+    );
+
+    L.DomEvent.disableClickPropagation(container);
+
+    container.innerHTML = buttonTemplate;
+
+    return container;
+  },
+});
+
+// adding new button to map controll
+map.addControl(new customControl());
+
+// --------------------------------------------------------------
+
+// input element
+const root = document.getElementById("marker");
+
+function addClassToParent() {
+  const searchBtn = document.querySelector(".leaflet-search");
+  searchBtn.addEventListener("click", (e) => {
+    // toggle class
+    e.target
+      .closest(".leaflet-autocomplete")
+      .classList.toggle("active-autocomplete");
+
+    // add placeholder
+    root.placeholder = "Search ...";
+
+    // focus on input
+    root.focus();
+
+    // use destroy method
+    autocomplete.destroy();
+  });
+}
+
+addClassToParent();
+
+// function clear input
+map.on("click", () => {
+  document
+    .querySelector(".leaflet-autocomplete")
+    .classList.remove("active-autocomplete");
+
+  clickOnClearButton();
+});
+
+// autocomplete section
+// more config find in https://github.com/tomickigrzegorz/autocomplete
+// --------------------------------------------------------------
+
+const autocomplete = new Autocomplete("marker", {
+  delay: 1000,
+  selectFirst: true,
+  howManyCharacters: 2,
+
+  onSearch: function ({ currentValue }) {
+    const api = `https://nominatim.openstreetmap.org/search?format=geojson&limit=5&q=${encodeURI(
+      currentValue
+    )}`;
+
+    /**
+     * Promise
+     */
+    return new Promise((resolve) => {
+      fetch(api)
+        .then((response) => response.json())
+        .then((data) => {
+          resolve(data.features);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
+  },
+
+  onResults: ({ currentValue, matches, template }) => {
+    const regex = new RegExp(currentValue, "i");
+    // checking if we have results if we don't
+    // take data from the noResults method
+    return matches === 0
+      ? template
+      : matches
+          .map((element) => {
+            return `
+              <li role="option">
+                <p>${element.properties.display_name.replace(
+                  regex,
+                  (str) => `<b>${str}</b>`
+                )}</p>
+              </li> `;
+          })
+          .join("");
+  },
+
+  onSubmit: ({ object }) => {
+    const { display_name } = object.properties;
+    const cord = object.geometry.coordinates;
+    // custom id for marker
+    // const customId = Math.random();
+
+    // remove last marker
+    map.eachLayer(function (layer) {
+      if (layer.options && layer.options.pane === "markerPane") {
+        if (layer._icon.classList.contains("leaflet-marker-locate")) {
+          map.removeLayer(layer);
+        }
+      }
+    });
+
+    // add marker
+    const marker = L.marker([cord[1], cord[0]], {
+      title: display_name,
+    });
+
+    // add marker to map
+    marker.addTo(map).bindPopup(display_name);
+
+    // turn on dragging markers
+marker.on("click", (e) => {
+  e.target.dragging.enable();
+  console.log(e);
+});
+
+
+    // set marker to coordinates
+    map.setView([cord[1], cord[0]], 8);
+
+    // add class to marker
+    L.DomUtil.addClass(marker._icon, "leaflet-marker-locate");
+  },
+
+  // the method presents no results
+  noResults: ({ currentValue, template }) =>
+    template(`<li>No results found: "${currentValue}"</li>`),
+});
+
+/*
+// add legend
+// ------------------------------
+const legend = L.control({ position: "bottomleft" });
+
+legend.onAdd = function () {
+  let div = L.DomUtil.create("div", "description");
+  L.DomEvent.disableClickPropagation(div);
+  const text = "Move the mouse";
+  div.insertAdjacentHTML("beforeend", text);
+  return div;
+};
+
+legend.addTo(map);
+
+
+// follow mouse
+// ------------------------------
+const followMouse = document.createElement("div");
+followMouse.className = "follow-mouse";
+document.body.appendChild(followMouse);
+
+const mapCointainer = document.querySelector("#map");
+
+mapCointainer.addEventListener("mousemove", function (e) {
+  const { offsetWidth: mapWidth, offsetHeight: mapHeight } = e.target;
+  const { offsetWidth: cordWidth, offsetHeight: cordHeight } = followMouse;
+
+  // get co-ordinates
+  let { xp, yp } = getCoords(e);
+
+  // convert point x,y to latlng
+  const point = L.point(xp, yp);
+  const coordinates = map.containerPointToLatLng(point);
+
+  // add coordinates to the div
+  followMouse.textContent = coordinates;
+
+  // set the position of the div
+  xp = xp + 20 + cordWidth > mapWidth ? xp - cordWidth - 10 : xp + 10;
+  yp = yp + 20 + cordHeight > mapHeight ? yp - cordHeight - 10 : yp + 10;
+
+  // followMouse.style.transform = `translate(${xp}px, ${-yp}px)`;
+  followMouse.style.left = `${xp}px`;
+  followMouse.style.top = `${yp}px`;
+});
+
+function getCoords(e) {
+  let mouseX = e.clientX;
+  let mouseY = e.clientY;
+
+  return {
+    xp: parseInt(mouseX),
+    yp: parseInt(mouseY),
+  };
+}
+*/
+
+/*
+// sidebar
+
+const menuItems = document.querySelectorAll(".menu-item");
+const sidebar = document.querySelector(".sidebar");
+const buttonClose = document.querySelector(".close-button");
+
+menuItems.forEach((item) => {
+  item.addEventListener("click", (e) => {
+    const target = e.target;
+
+    if (
+      target.classList.contains("active-item") ||
+      !document.querySelector(".active-sidebar")
+    ) {
+      document.body.classList.toggle("active-sidebar");
+    }
+
+    // show content
+    showContent(target.dataset.item);
+    // add active class to menu item
+    addRemoveActiveItem(target, "active-item");
+  });
+});
+
+// close sidebar when click on close button
+buttonClose.addEventListener("click", () => {
+  closeSidebar();
+});
+
+// remove active class from menu item and content
+function addRemoveActiveItem(target, className) {
+  const element = document.querySelector(`.${className}`);
+  target.classList.add(className);
+  if (!element) return;
+  element.classList.remove(className);
+}
+
+// show specific content
+function showContent(dataContent) {
+  const idItem = document.querySelector(`#${dataContent}`);
+  addRemoveActiveItem(idItem, "active-content");
+}
+
+// --------------------------------------------------
+// close when click esc
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Escape") {
+    closeSidebar();
+  }
+});
+
+// close sidebar when click outside
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".sidebar")) {
+    closeSidebar();
+  }
+});
+
+// --------------------------------------------------
+// close sidebar
+
+function closeSidebar() {
+  document.body.classList.remove("active-sidebar");
+  const element = document.querySelector(".active-item");
+  const activeContent = document.querySelector(".active-content");
+  if (!element) return;
+  element.classList.remove("active-item");
+  activeContent.classList.remove("active-content");
+}
+
+*/
+
+//Basemap
+//For full list of pre-defined basemaps, navigate to  http://leaflet-extras.github.io/leaflet-providers/preview/
+
+var basemap0 = L.tileLayer(
+  "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+  {
+    attribution:
+      '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+    subdomains: "abcd"
+  }
+);
+var basemap1 = L.tileLayer(
+  "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png",
+  {
+    attribution:
+      '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+    subdomains: "abcd"
+  }
+);
+var basemap2 = L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    attribution: "OpenStreetMap"
+  }
+);
+var basemap3 = L.tileLayer(
+  "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+  {
+    subdomains: ["mt0", "mt1", "mt2", "mt3"],
+    attribution: "Google Streets"
+  }
+);
+var basemap4 = L.tileLayer(
+  "http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+  {
+    subdomains: ["mt0", "mt1", "mt2", "mt3"],
+    attribution: "Google Satellite"
+  }
+);
+var basemap5 = L.tileLayer(
+  "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+  {
+    subdomains: ["mt0", "mt1", "mt2", "mt3"],
+    attribution: "Google Hybrid"
+  }
+);
+
+var basemap6 = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: '&copy; Esri'
+});
+basemap0.addTo(map);
+
+var shelterMarkers = L.layerGroup();
+for ( var i in 4) {
+  var currentShelter = window['marker' + i];
+            currentShelter.addTo(shelterMarkers);
+}//end loop
+
+
+
+
+//var cities = L.layerGroup([layers_group //#]);
+
+
+
+//Control Layer
+var baseMaps = {
+  "Carto Grey": basemap0,
+  "Carto Dark": basemap1,
+  "OpenStreetMap": basemap2,
+  "Google Street": basemap3,
+  "Google Satellite": basemap4,
+  "Google Hybrid": basemap5,
+  "Esri Imagery": basemap6
+};
+var layerControl = L.control.layers(baseMaps, [], { collapsed: true });
+
+layerControl.addTo(map);
+
+
+        L.tileLayer(osmURL, {
+            minZoom: 7,
+            maxZoom: 19,
+            fullscreenControl: true,
+            attribution: attribution,
+        }).addTo(map);
+
+        const control = new L.Control.SimpleLocate({
+            position: "topleft",
+            className: "button-locate",
+            afterClick: (result) => {
+                console.log("afterClick", result);
+                if (!result.geolocation) console.log("Geolocation Error");
+                if (!result.orientation) console.log("Orientation Error");
+            },
+            afterMarkerAdd: () => {
+                console.log("afterMarkerAdded");
+                const elem = document.getElementById("leaflet-simple-locate-icon-spot");
+                if (elem) {
+                    elem.addEventListener("click", (event) => {
+                        const latlng = control.getLatLng();
+                        const latlng_str = `geolocation: [${Math.round(latlng.lat * 100000) / 100000}, ${Math.round(latlng.lng * 100000) / 100000}]`;
+
+                        const accuracy = control.getAccuracy();
+                        const accuracy_str = `accuracy: ${Math.round(accuracy)} meter`;
+
+                        const angle = control.getAngle();
+                        const angle_str = `orientation: ${Math.round(angle)} degree`;
+
+                        L.popup()
+                            .setLatLng(latlng)
+                            .setContent(`<p style="margin: 0.25rem 0 0.25rem 0">${latlng_str}</p><p style="margin: 0.25rem 0 0.25rem 0">${accuracy_str}</p><p style="margin: 0.25rem 0 0.25rem 0">${angle_str}</p>`)
+                            .openOn(map);
+
+                        event.stopPropagation();
+                        event.preventDefault();
+                    });
+                }
+            },
+            // afterDeviceMove: (event) => {
+            //     console.log(event);
+            // }
+        }).addTo(map);
+
+        L.control.layers.minimap(basemaps, overlays, options).addTo(map);
+        L.control.zoom({ position: "topright" }).addTo(map);
+// https://leafletjs.com/reference-1.7.1.html#control-scale
+L.control.scale({
+    imperial: false,
+  })
+  .addTo(map);
+
+        map.on("locationfound", (event) => console.log(event));
+        map.on("locationerror", (event) => console.log(event));
+        L.DomEvent.on(window, "ondeviceorientationabsolute" in window ? "deviceorientationabsolute" : "deviceorientation", (event) => console.log(event));
+
+    </script>
+</body>
+
+</html>
