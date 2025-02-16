@@ -42,6 +42,12 @@
       href="https://cdn.jsdelivr.net/gh/tomickigrzegorz/autocomplete@1.8.6/dist/css/autocomplete.min.css"
     />
     <script src="https://cdn.jsdelivr.net/gh/tomickigrzegorz/autocomplete@1.8.6/dist/js/autocomplete.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+
+
   </head>
 
 
@@ -173,9 +179,18 @@
 -->
 
 <body>
+      <div id="controls">
+              <input type="text" id="gfrom" placeholder="From (location)" />
+            <div id="goutputfrom"></div>
+
+        <input type="text" id="gto" placeholder="To (location)" />
+            <div id="goutputto"></div>
+        <button onclick="calculateRoute()">Show Route</button>
+
+    </div>
     <div id="map"></div>
-      <body>
-    <div class="cities">
+      <!--   <body>
+  <div class="cities">
       <div class="city">
         <label for="cityA">Distance from</label>
         <div class="auto-search-wrapper">
@@ -199,12 +214,10 @@
         </div>
       </div>
       <button class="clear-distance">CLEAR</button>
-    </div>
-    <!-- <div class="length">Select cities</div>-->
-  </body>
+    </div> 
+   <div class="length">Select cities</div>
+  </body>-->
   
-
-
     <script>
         "use strict";
 
@@ -847,6 +860,62 @@ layerControl.addTo(map);
             // }
         }).addTo(map);
 
+
+                // Add routing control to the map
+        var controller = L.Routing.control({
+            waypoints: [],
+            routeWhileDragging: true
+        }).addTo(map);
+
+            document.getElementById('gfrom').addEventListener('change', function () {
+                var locationfrom = this.value;
+                fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + locationfrom)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            var latfrom = data[0].lat;
+                            var lonfrom = data[0].lon;
+                            document.getElementById('goutputfrom').innerHTML = latfrom + ',' + lonfrom;
+                            var marker = L.marker([latfrom, lonfrom]).addTo(map);
+                            map.setView([latfrom, lonfrom], 13);
+                        } else {
+                            document.getElementById('goutputfrom').innerHTML = 'Location not found';
+                        }
+                    });
+            });
+
+                        document.getElementById('gto').addEventListener('change', function () {
+                var locationto = this.value;
+                fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + locationto)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            var latto = data[0].lat;
+                            var lonto = data[0].lon;
+                            document.getElementById('goutputto').innerHTML =  latto + ',' + lonto;
+                            var marker = L.marker([latto, lonto]).addTo(map);
+                            map.setView([latto, lonto], 13);
+                        } else {
+                            document.getElementById('goutputto').innerHTML = 'Location not found';
+                        }
+                    });
+            });
+
+        // Function to calculate and display the route
+        function calculateRoute() {
+            var fromInput = document.getElementById('goutputfrom').innerText;
+          console.log(fromInput)
+            var toInput = document.getElementById('goutputto').innerText;
+
+            var fromLatLng = fromInput.split(',').map(Number);
+            var toLatLng = toInput.split(',').map(Number);
+
+            controller.setWaypoints([
+                L.latLng(fromLatLng[0], fromLatLng[1]),
+                L.latLng(toLatLng[0], toLatLng[1])
+            ]);    
+        }
+
         L.control.layers.minimap(basemaps, overlays, options).addTo(map);
         L.control.zoom({ position: "topright" }).addTo(map);
 // https://leafletjs.com/reference-1.7.1.html#control-scale
@@ -859,7 +928,54 @@ L.control.scale({
         map.on("locationerror", (event) => console.log(event));
         L.DomEvent.on(window, "ondeviceorientationabsolute" in window ? "deviceorientationabsolute" : "deviceorientation", (event) => console.log(event));
 
-    </script>
+ /*var control1 = L.Routing.control1({
+    waypoints: [
+        L.latLng(57.74, 11.94),
+        L.latLng(57.6792, 11.949)
+    ],
+    lineOptions: {
+        styles: [{className: 'animate'}] // Adding animate class
+    },
+    routeWhileDragging: true
+}).addTo(map);*/
+
+        L.Routing.control({
+  waypoints: [
+    L.latLng(57.74, 11.94),
+    L.latLng(57.6792, 11.949)
+  ]
+}).addTo(map);
+ </script>
+
+
+
+
+
+
+ <!-- 
+         <script>
+     var mywaypoints = [
+     [ 40.741, -73.993 ],
+    [ 40.736, -73.993 ] 
+    ]
+     L.Routing.control({
+      waypoints: [
+        L.latLng.apply(null, mywaypoints[0]),
+        L.latLng.apply(null, mywaypoints[1])
+      ]
+     }).addTo(map);
+     </script>    
+  </body>
+  <script>
+  function getURLParameter(name) {
+    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+  }
+  console.log(getURLParameter("viewer_pane"))
+  if (getURLParameter("viewer_pane") === "1"){
+    document.write("<style>.rChart { width: 100% }</style>");
+  }
+  </script>
+  -->
 </body>
 
 </html>
